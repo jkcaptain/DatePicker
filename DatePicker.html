@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>picker</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+	<link rel="stylesheet" href="./DatePicker.css">	
+</head>
+<body>
+    <button id="showPicker">自定义</button>
+    <button id="datePicker">picker</button>
+    <div class="time" id="time"></div>
+	<div class="picker-wrapper" id="picker-wrapper">
+        <div class="picker-mask" id="picker-mask"></div>
+		<div class="picker-inner" id="picker-inner">
+			<div class="picker-top">
+                <div class="tip">请选择您想查看的时间区间(最大不超过365天)</div>
+				<div class="submit" id="checked-date">完成</div>
+			</div>
+			<div class="picker-list-wrapper">
+				<div class="picker-list-inner" id="picker-list-inner">
+				</div>				
+            </div>
+            <div class="picker-btn-wrapper" id="picker-btn-wrapper">
+                <div class="picker-start-time select-btn">
+                    <span>开始日期</span>
+                    <p id="selectedStartTime">请选择日期</p>
+                </div>
+                <div class="picker-end-time select-btn">
+                    <span>结束日期</span>
+                    <p id="selectedEndTime">请选择日期</p>
+                </div>
+            </div>
+		</div>
+    </div>
+    
+    <div class="picker-list-wrapper">
+        <div class="picker-list-inner" id="picker-list-inner2">
+        </div>              
+    </div>
+    
+	<script src="./DatePicker.js"></script>
+	<script>
+		;(function(){
+            var finalDateArr = [];
+            var time = document.getElementById('time');
+
+            var showPicker = document.getElementById('showPicker');
+            var datePicker = document.getElementById('datePicker');
+
+            var pickerWrapper = document.getElementById('picker-wrapper'),
+                pickerMask = document.getElementById('picker-mask');
+            	pickerInner = document.getElementById('picker-inner'),
+            	pickerBtnWrapper = document.getElementById('picker-btn-wrapper'),
+                selectedStartTime = document.getElementById('selectedStartTime'),
+                selectedEndTime = document.getElementById('selectedEndTime'),
+                checkedDate = document.getElementById('checked-date');
+            
+            var startDate = (new Date().getFullYear()) + '-01-01'; // 20xx-01-01
+            var picker;
+            
+            showPicker.addEventListener('click', function(e){
+
+                pickerWrapper.style.display = 'block';
+                pickerMask.style.display = 'block';
+                
+                if (!picker) {
+                    picker = DatePicker('#picker-list-inner', {
+                        year: '2011-2028',
+                        startDate: startDate,
+                        separator: '-',
+                        //needSuffix: true,
+                        selectCallback: selectCallback
+                    });
+                    finalDateArr[0] = selectedStartTime.innerText = startDate;
+                    selectedStartTime.parentNode.classList.add('active');
+                    selectedEndTime.parentNode.classList.remove('active');
+                }                
+                
+                showPickerFunc();             
+            }, false);
+
+            datePicker.addEventListener('click', function(e){
+                var picker = DatePicker('#picker-list-inner2', {
+                    year: '2017-2028',
+                    startDate: '2017-01-01',
+                    separator: '-'
+                });
+            })
+
+            selectedStartTime.parentNode.addEventListener('click', function(e){
+                toggleAtice(e);
+                if (finalDateArr[0]) {
+                    picker.translateTo(finalDateArr[0]);
+                }
+            }, false);
+            selectedEndTime.parentNode.addEventListener('click', function(e){
+                toggleAtice(e);
+                if (!finalDateArr[1]) {
+                    selectedEndTime.innerText = finalDateArr[1] = picker.getSelectedTime();
+                } else {
+                    picker.translateTo(finalDateArr[1]);
+                }
+            }, false);
+
+            checkedDate.addEventListener('click', function(e){
+                var startTime = finalDateArr[0],
+                    endTime = finalDateArr[1];
+                if(!startTime){
+                    alert('请选择开始日期');
+                    return;
+                }
+                if(!endTime){
+                    alert('请选择结束日期');
+                    return;
+                }
+                if(new Date(endTime) > Date.now()){
+                    alert('结束日期不能大于今天');
+                    return;
+                }
+                if(new Date(startTime) > new Date(endTime)){
+                    alert('开始日期晚于结束日期');
+                    return;
+                }
+                time.innerText = startTime + '-' + endTime;
+
+                hidePickerFunc();
+            }, false);
+
+            pickerWrapper.addEventListener('click', function(e){                  
+                hidePickerFunc();
+            }, false);            
+
+            var transitionendStr = fixTransitionEnd();
+            pickerInner.addEventListener(transitionendStr, function(e){
+                if(pickerInner.classList.contains('leave')){
+                    pickerWrapper.style.display = 'none';
+                    pickerMask.style.display = 'none';                    
+                    pickerInner.classList.remove('leave');
+                }                 
+            }, false);
+            pickerInner.addEventListener('click', function(e){
+            	e.stopPropagation();
+            }, false);
+
+            function showPickerFunc(){
+                pickerInner.offsetWidth = pickerInner.offsetWidth;
+                pickerInner.classList.add('enter');
+            }
+            function hidePickerFunc(){
+                pickerInner.classList.remove('enter');
+                pickerInner.classList.add('leave');
+            }
+            function toggleAtice(e){
+                var elem = e.currentTarget;
+                [].forEach.call(elem.parentNode.children, function(item, index){
+                    item.classList.remove('active');
+                });                
+                elem.classList.add('active');
+            }
+            function selectCallback(){
+                var activeElem = pickerBtnWrapper.querySelector('.select-btn.active');
+                var selectedTime = picker.getSelectedTime();
+                activeElem.querySelector('p').innerText =  selectedTime;
+                finalDateArr.splice(getIndex(activeElem, pickerBtnWrapper), 1, selectedTime);              
+            }
+            function getIndex(elem, parent){
+                return [].indexOf.call(parent.children, elem);
+            }
+            function fixTransitionEnd(){
+                var elemStyle = document.documentElement.style,
+                    transitions = {
+                        transition: 'transitionend',
+                        OTransition: 'oTransitionEnd',
+                        MozTransition: 'transitionend',
+                        WebkitTransition: 'webkitTransitionEnd' 
+                    },
+                    transitionEndName = 'transitionend';
+                
+                for (var i in transitions) {
+                    if (elemStyle[i] !== undefined){
+                        transitionEndName = transitions[i];
+                    }
+                }
+                return transitionEndName;
+            }
+		})();
+
+        document.querySelector('.picker-wrapper').addEventListener('touchmove', function(e){
+            e.preventDefault();
+        }, false);          
+	</script>
+</body>
+</html>
