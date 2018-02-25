@@ -1,5 +1,5 @@
 # DatePicker
-javascript picker时间选择器，不依赖其他库。
+移动端 picker 时间选择器，不依赖其他库。
 
 大致流程
 
