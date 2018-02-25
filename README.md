@@ -3,11 +3,11 @@
 
 大致流程
 
-1.创建好html
+1.创建好picker的html。
 
 2.touchstart时，记录坐标。
 
-3.touchmove时，计算手指移动的距离，改变元素的transform或left
+3.touchmove时，计算手指移动的距离，改变元素的transform或top。
 
 4.touchend时，用户可能会滑动到某列的中间位置，注意需要调整picker的位置。我这里用的是四舍五入Math.round。
 
