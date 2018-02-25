@@ -27,14 +27,16 @@ html结构：
     </div>
 
 用法：
-
-    var picker = window.DatePicker(elem || id, {
-        year: '2013-2020',   //String, 表示年份的区间，默认区间为2011-2028
-        startDate: '2018-01-01',  //String, 表示初始化时的时间，默认值为当前日
-        separator： '-',    //String, 表示年月日之间的分隔符，默认值为'-'
+	
+	var picker = window.DatePicker('#picker-list-inner', {
+		year: '2013-2020',   //String, 表示年份的区间，默认区间为2011-2028
+		startDate: '2018-01-01',  //String, 表示初始化时的时间，默认值为当前日
+		separator： '-',    //String, 表示年月日之间的分隔符，默认值为'-'
         needSuffix: false,  //Boolean, 是否需要在数字后面加上 年、月、日，默认值为false
         selectCallback: undefined   //Function, 每次选择时间后触发的回调函数，默认值为undefined
-    });
+	});
+
+第一个参数可以是id也可以是dom元素
 
 提供了2个方法：
 
