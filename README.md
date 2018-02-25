@@ -1,8 +1,6 @@
 # DatePicker
 javascript picker时间选择器，不依赖其他库。
 
-工作中有一个时间选择的需求，类似demo中的自定义picker —— DatePicker.html。
-
 大致流程
 
 1.创建好html
@@ -41,8 +39,7 @@ html结构：
 提供了2个方法：
 
     picker.getSelectedTime()    //获取当前选中的时间    
-    
-    picker.translateTo('2018-01-30');    //根据参数传入的值，picker自动滑动至这个时间
+	picker.translateTo('2018-01-30');    //根据参数传入的值，picker自动滑动至这个时间
 
 注意一点：separator参数，如果设置的话，需要跟 year 和 startDate 参数的分隔符相同，尽量统一。
 
