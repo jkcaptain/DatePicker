@@ -1,5 +1,5 @@
 # DatePicker
-javascript picker时间选择器
+javascript picker时间选择器，不依赖其他库。
 
 工作中有一个时间选择的需求，类似demo中的自定义picker —— DatePicker.html。
 
@@ -19,6 +19,13 @@ javascript picker时间选择器
 
 2.touchend时，假如用户快速滑动，需要有一个公式去计算出此时元素应该滚动多大的距离。我是参考的mint-ui。
 
+html结构：
+
+    <div class="picker-list-wrapper">
+        <div class="picker-list-inner" id="picker-list-inner">
+        </div>
+    </div>
+
 用法：
 
     var picker = window.DatePicker(elem || id, {
@@ -33,7 +40,9 @@ javascript picker时间选择器
 
     picker.getSelectedTime()    //获取当前选中的时间    
     
-    picker.translateTo('2018-01-30');    //根据传入的值，picker自动滑动至这个时间
+    picker.translateTo('2018-01-30');    //根据参数传入的值，picker自动滑动至这个时间
+
+注意一点：separator参数，如果设置的话，需要跟 year 和 startDate 参数的分隔符相同，尽量统一。
 
 我比较喜欢单纯，所以只实现picker的基本功能，其他比如确定或取消按钮，picker的出入动画，没有在插件里实现。
 
@@ -41,7 +50,7 @@ DatePicker.html是我自定义的picker， 实现了出入动画和确定按钮�
 
 缺点：
 
-1.不是面向对象
+1.没有面向对象
 
 2.没有自定义的事件系统，有的话就不用回调函数了
 
