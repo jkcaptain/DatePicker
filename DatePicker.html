@@ -1,25 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<title>picker</title>
-	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-	<link rel="stylesheet" href="./DatePicker.css">	
+    <meta charset="UTF-8">
+    <title>自定义picker</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body,
+        button,
+        input,
+        select,
+        textarea {
+            font-family: PingFangSC-Regular, Helvetica Neue, Helvetica, STHeiTi, sans-serif;
+        }
+
+        .picker-wrapper {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .picker-mask {
+            position: absolute;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .picker-inner {
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            left: 0;
+            background-color: #fff;
+            -webkit-transform: translate(0, 100%) translateZ(0);
+            transform: translate(0, 100%) translateZ(0);
+            -webkit-transition-property: transform;
+            -webkit-transition-duration: 0.2s;
+            -webkit-transition-timing-function: ease-out;
+            transition-property: transform;
+            transition-duration: 0.2s;
+            transition-timing-function: ease-out;
+        }
+
+        .picker-inner.enter {
+            -webkit-transform: translate(0, 0) translateZ(0);
+            transform: translate(0, 0) translateZ(0);
+        }
+
+        .picker-inner.leave {
+            -webkit-transform: translate(0, 100%) translateZ(0);
+            transform: translate(0, 100%) translateZ(0);
+        }
+
+        .picker-top {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            height: 42px;
+            line-height: 42px;
+            font-size: 14px;
+            color: #666;
+            box-sizing: border-box;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+            justify-content: space-between;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .picker-top .cancel {
+            padding: 0 12px;
+            color: #999;
+        }
+
+        .picker-top .submit {
+            padding: 0 12px;
+            color: #f60;
+        }
+
+        .picker-top .tip {
+            padding-left: 12px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .picker-btn-wrapper {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            height: 52px;
+            font-size: 14px;
+            text-align: center;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .picker-btn-wrapper .select-btn {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            flex: 1;
+            padding: 8px 0;
+            line-height: 18px;
+        }
+
+        .picker-btn-wrapper .select-btn.active {
+            background-color: #ff681d;
+        }
+
+        .picker-btn-wrapper span {
+            color: #808080;
+        }
+
+        .picker-btn-wrapper p {
+            padding-top: 2px;
+            color: #333;
+        }
+
+        .picker-btn-wrapper .select-btn.active span,
+        .picker-btn-wrapper .select-btn.active p {
+            color: #fff;
+        }
+    </style>
+    <link rel="stylesheet" href="./DatePicker.css">
 </head>
+
 <body>
-    <button id="showPicker">自定义</button>
-    <button id="datePicker">picker</button>
+    <button id="showPicker">自定义picker</button>
+
     <div class="time" id="time"></div>
-	<div class="picker-wrapper" id="picker-wrapper">
+
+    <div class="picker-wrapper" id="picker-wrapper">
         <div class="picker-mask" id="picker-mask"></div>
-		<div class="picker-inner" id="picker-inner">
-			<div class="picker-top">
+        <div class="picker-inner" id="picker-inner">
+            <div class="picker-top">
                 <div class="tip">请选择您想查看的时间区间(最大不超过365天)</div>
-				<div class="submit" id="checked-date">完成</div>
-			</div>
-			<div class="picker-list-wrapper">
-				<div class="picker-list-inner" id="picker-list-inner">
-				</div>				
+                <div class="submit" id="checked-date">完成</div>
+            </div>
+            <div class="picker-list-wrapper">
+                <div class="picker-list-inner" id="picker-list-inner">
+                </div>
             </div>
             <div class="picker-btn-wrapper" id="picker-btn-wrapper">
                 <div class="picker-start-time select-btn">
@@ -31,39 +162,34 @@
                     <p id="selectedEndTime">请选择日期</p>
                 </div>
             </div>
-		</div>
+        </div>
     </div>
-    
-    <div class="picker-list-wrapper">
-        <div class="picker-list-inner" id="picker-list-inner2">
-        </div>              
-    </div>
-    
-	<script src="./DatePicker.js"></script>
-	<script>
-		;(function(){
+
+    <script src="./DatePicker.js"></script>
+    <script>
+        ; (function () {
             var finalDateArr = [];
             var time = document.getElementById('time');
 
             var showPicker = document.getElementById('showPicker');
-            var datePicker = document.getElementById('datePicker');
 
             var pickerWrapper = document.getElementById('picker-wrapper'),
-                pickerMask = document.getElementById('picker-mask');
-            	pickerInner = document.getElementById('picker-inner'),
-            	pickerBtnWrapper = document.getElementById('picker-btn-wrapper'),
+                pickerMask = document.getElementById('picker-mask'),
+                pickerInner = document.getElementById('picker-inner'),
+                pickerBtnWrapper = document.getElementById('picker-btn-wrapper'),
                 selectedStartTime = document.getElementById('selectedStartTime'),
                 selectedEndTime = document.getElementById('selectedEndTime'),
                 checkedDate = document.getElementById('checked-date');
-            
+
             var startDate = (new Date().getFullYear()) + '-01-01'; // 20xx-01-01
             var picker;
-            
-            showPicker.addEventListener('click', function(e){
+
+            //点击自定义按钮，初始化picker
+            showPicker.addEventListener('click', function (e) {
 
                 pickerWrapper.style.display = 'block';
                 pickerMask.style.display = 'block';
-                
+
                 if (!picker) {
                     picker = DatePicker('#picker-list-inner', {
                         year: '2011-2028',
@@ -75,26 +201,21 @@
                     finalDateArr[0] = selectedStartTime.innerText = startDate;
                     selectedStartTime.parentNode.classList.add('active');
                     selectedEndTime.parentNode.classList.remove('active');
-                }                
-                
-                showPickerFunc();             
+                }
+
+                showPickerFunc();
             }, false);
 
-            datePicker.addEventListener('click', function(e){
-                var picker = DatePicker('#picker-list-inner2', {
-                    year: '2017-2028',
-                    startDate: '2017-01-01',
-                    separator: '-'
-                });
-            })
-
-            selectedStartTime.parentNode.addEventListener('click', function(e){
+            //选择开始时间
+            selectedStartTime.parentNode.addEventListener('click', function (e) {
                 toggleAtice(e);
                 if (finalDateArr[0]) {
                     picker.translateTo(finalDateArr[0]);
                 }
             }, false);
-            selectedEndTime.parentNode.addEventListener('click', function(e){
+
+            //选择结束时间
+            selectedEndTime.parentNode.addEventListener('click', function (e) {
                 toggleAtice(e);
                 if (!finalDateArr[1]) {
                     selectedEndTime.innerText = finalDateArr[1] = picker.getSelectedTime();
@@ -103,92 +224,103 @@
                 }
             }, false);
 
-            checkedDate.addEventListener('click', function(e){
+            //点击完成按钮
+            checkedDate.addEventListener('click', function (e) {
                 var startTime = finalDateArr[0],
                     endTime = finalDateArr[1];
-                if(!startTime){
+                if (!startTime) {
                     alert('请选择开始日期');
                     return;
                 }
-                if(!endTime){
+                if (!endTime) {
                     alert('请选择结束日期');
                     return;
                 }
-                if(new Date(endTime) > Date.now()){
+                if (new Date(endTime) > Date.now()) {
                     alert('结束日期不能大于今天');
                     return;
                 }
-                if(new Date(startTime) > new Date(endTime)){
+                if (new Date(startTime) > new Date(endTime)) {
                     alert('开始日期晚于结束日期');
                     return;
                 }
-                time.innerText = startTime + '-' + endTime;
+                time.innerText = startTime + '~' + endTime;
 
                 hidePickerFunc();
             }, false);
 
-            pickerWrapper.addEventListener('click', function(e){                  
+            //点击遮罩隐藏picker
+            pickerWrapper.addEventListener('click', function (e) {
                 hidePickerFunc();
-            }, false);            
+            }, false);
 
             var transitionendStr = fixTransitionEnd();
-            pickerInner.addEventListener(transitionendStr, function(e){
-                if(pickerInner.classList.contains('leave')){
+            //transitionEnd之后隐藏遮罩
+            pickerInner.addEventListener(transitionendStr, function (e) {
+                if (pickerInner.classList.contains('leave')) {
                     pickerWrapper.style.display = 'none';
-                    pickerMask.style.display = 'none';                    
+                    pickerMask.style.display = 'none';
                     pickerInner.classList.remove('leave');
-                }                 
+                }
             }, false);
-            pickerInner.addEventListener('click', function(e){
-            	e.stopPropagation();
+            pickerInner.addEventListener('click', function (e) {
+                e.stopPropagation();
             }, false);
 
-            function showPickerFunc(){
+            //显示picker
+            function showPickerFunc() {
                 pickerInner.offsetWidth = pickerInner.offsetWidth;
                 pickerInner.classList.add('enter');
             }
-            function hidePickerFunc(){
+            //隐藏picker
+            function hidePickerFunc() {
                 pickerInner.classList.remove('enter');
                 pickerInner.classList.add('leave');
             }
-            function toggleAtice(e){
+            //切换底部两个按钮的状态
+            function toggleAtice(e) {
                 var elem = e.currentTarget;
-                [].forEach.call(elem.parentNode.children, function(item, index){
+                [].forEach.call(elem.parentNode.children, function (item, index) {
                     item.classList.remove('active');
-                });                
+                });
                 elem.classList.add('active');
             }
-            function selectCallback(){
-                var activeElem = pickerBtnWrapper.querySelector('.select-btn.active');
-                var selectedTime = picker.getSelectedTime();
-                activeElem.querySelector('p').innerText =  selectedTime;
-                finalDateArr.splice(getIndex(activeElem, pickerBtnWrapper), 1, selectedTime);              
-            }
-            function getIndex(elem, parent){
+            //根据索引当前操作的是开始时间还是结束时间
+            function getIndex(elem, parent) {
                 return [].indexOf.call(parent.children, elem);
             }
-            function fixTransitionEnd(){
+            //每次选择时间后的回调函数
+            function selectCallback() {
+                var activeElem = pickerBtnWrapper.querySelector('.select-btn.active');
+                var selectedTime = picker.getSelectedTime();
+                activeElem.querySelector('p').innerText = selectedTime;
+                finalDateArr.splice(getIndex(activeElem, pickerBtnWrapper), 1, selectedTime);
+            }
+            //兼容transitionEnd事件
+            function fixTransitionEnd() {
                 var elemStyle = document.documentElement.style,
                     transitions = {
                         transition: 'transitionend',
                         OTransition: 'oTransitionEnd',
                         MozTransition: 'transitionend',
-                        WebkitTransition: 'webkitTransitionEnd' 
+                        WebkitTransition: 'webkitTransitionEnd'
                     },
                     transitionEndName = 'transitionend';
-                
+
                 for (var i in transitions) {
-                    if (elemStyle[i] !== undefined){
+                    if (elemStyle[i] !== undefined) {
                         transitionEndName = transitions[i];
                     }
                 }
                 return transitionEndName;
             }
-		})();
+        })();
 
-        document.querySelector('.picker-wrapper').addEventListener('touchmove', function(e){
+        //解决ios页面拖底的bug
+        pickerWrapper.addEventListener('touchmove', function (e) {
             e.preventDefault();
         }, false);          
-	</script>
+    </script>
 </body>
+
 </html>
