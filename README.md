@@ -34,7 +34,7 @@ html结构：
         selectCallback: undefined   //Function, 每次选择时间后触发的回调函数，默认值为undefined
 	});
 
-第一个参数可以是id也可以是dom元素
+第一个参数可以是id也可以是dom元素，比如document.getElementById('picker-list-inner')。
 
 提供了2个方法：
 
